@@ -1,14 +1,21 @@
+import { HomeMainPageContent } from "./HomeMainPageContent"
+
 @Component
-export  struct HomeContent {
-  @State currentTabIndex: number = 0;
+export struct HomeContent {
+  @State currentTabIndex: number = 0
+  @State needFontColorReverse: boolean = false
+  @State needShowTabBg: boolean = false
+  @State tabBgColor: string | Resource = "#ffffff"
 
   @Builder
   buildTabBar(
     text: string | Resource,
-    index: number
+    index: number,
+    fontColor: string | Resource = "#000000",
+    fontColorReverse: string | Resource = "#ffffff",
   ) {
     Column() {
-      Text(text).fontSize(19)
+      Text(text).fontSize(19).fontColor(this.needFontColorReverse && !this.needShowTabBg ? fontColorReverse : fontColor)
       Row()
         .width(15)
         .height(3)
@@ -19,33 +26,55 @@ export  struct HomeContent {
   }
 
   build() {
-    Tabs() {
-      TabContent() {
-        Text("首页内容")
+    Stack({ alignContent: Alignment.TopStart }) {
+      if (this.needShowTabBg) {
+        Row()
+          .width('100%')
+          .height(50)  // 根据你的 TabBar 实际高度调整
+          .backgroundColor(this.tabBgColor)
+          .animation({duration: 200})
       }
-      .tabBar(this.buildTabBar(
-        "首页",
-        0
-      ))
 
-      TabContent() {
-        Text("手机发布内容")
-      }
-      .tabBar(this.buildTabBar(
-        "手机发布",
-        1
-      ))
+      Tabs() {
+        TabContent() {
+          HomeMainPageContent({
+            onAdBgChange: (isDark: boolean) => {
+              this.needFontColorReverse = isDark
+            },
+            onScrolledUpSomeDistance: (isMoreThan: boolean) => {
+              this.needShowTabBg = isMoreThan
+          }
+          })
+        }
+        .tabBar(this.buildTabBar(
+          "首页",
+          0
+        ))
+        .clip(false)
 
-      TabContent() {
-        Text("国补内容")
+        TabContent() {
+          Text("手机发布内容")
+        }
+        .tabBar(this.buildTabBar(
+          "手机发布",
+          1
+        ))
+
+        TabContent() {
+          Text("国补内容")
+        }
+        .tabBar(this.buildTabBar(
+          "国补",
+          2,
+          "#569976",
+          "#569976"
+        ))
       }
-      .tabBar(this.buildTabBar(
-        "国补",
-        2
-      ))
+      .onChange((index: number) => {
+        this.currentTabIndex = index;
+      })
+      .barWidth("70%")
+      .clip(this.needShowTabBg)
     }
-    .onChange((index: number) => {
-      this.currentTabIndex = index;
-    })
   }
 }

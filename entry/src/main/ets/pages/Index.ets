@@ -3,7 +3,7 @@ import { HomeContent } from './HomeContent';
 @Entry
 @Component
 struct Index {
-  @State currentTabIndex: number = 0;
+  @State currentTabIndex: number = 0
 
   @Builder
   buildTabBar(
@@ -71,7 +71,7 @@ struct Index {
       ))
     }
     .barPosition(BarPosition.End)
-    .barBackgroundColor("#ffffffff")
+    .barBackgroundColor($r("app.color.background"))
     .animationDuration(0)
     .onChange((index: number) => {
       this.currentTabIndex = index;

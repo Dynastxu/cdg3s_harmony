@@ -3,6 +3,18 @@
     {
       "name": "start_window_background",
       "value": "#FFFFFF"
+    },
+    {
+      "name": "theme",
+      "value": "#fc661c"
+    },
+    {
+      "name": "background",
+      "value": "#ffffff"
+    },
+    {
+      "name": "font",
+      "value": "#000000"
     }
   ]
 }
