@@ -1,4 +1,4 @@
-import { LengthUnit } from "@kit.ArkUI"
+import { BorderRadiusMode, LengthUnit } from "@kit.ArkUI"
 
 @Component
 @Preview
@@ -87,6 +87,33 @@ export struct HomeMainPageContent {
       "title": "青春运动季",
       "subtitle": "限时限量抢好礼",
       "image": $r("app.media.icon_qcydj")
+    }
+  ]
+  @State popularPhones: Record<string, string | Resource>[] = [
+    {
+      "name": "Xiaomi 17 Max",
+      "desc": "至高享12期免息 >",
+      "image": $r("app.media.xiaomi_17_max")
+    },
+    {
+      "name": "REDMI 17C",
+      "desc": "至高优惠200元 >",
+      "image": $r("app.media.redmi_17c")
+    },
+    {
+      "name": "Note 15 系列",
+      "desc": "到手价999元起 >",
+      "image": $r("app.media.note_15_series")
+    },
+    {
+      "name": "K90",
+      "desc": "至高优惠300元 >",
+      "image": $r("app.media.k90")
+    },
+    {
+      "name": "Turbo 5 Max",
+      "desc": "至高优惠200元 >",
+      "image": $r("app.media.turbo_5_max")
     }
   ]
   onAdBgChange?: (isDark: boolean) => void
@@ -191,10 +218,7 @@ export struct HomeMainPageContent {
     }
     .scrollable(ScrollDirection.Horizontal)
     .width("100%")
-    .margin({
-      left: 10,
-      right: 10
-    })
+    .margin({left: 5, right: 5})
     .scrollBar(BarState.On)
     .scrollBarMargin({
       start: { value: 135, unit: LengthUnit.VP },
@@ -269,10 +293,6 @@ export struct HomeMainPageContent {
     }
     .height(130)
     .width("100%")
-    .padding({
-      left: 10,
-      right: 10
-    })
     .clip(true)
   }
 
@@ -284,12 +304,12 @@ export struct HomeMainPageContent {
   ) {
     Column() {
       Text(title)
-        .fontWeight(FontWeight.Bold)
+        .fontWeight(FontWeight.Medium)
         .fontSize(12)
       Text(subtitle)
         .fontSize(10)
         .margin({top: 2})
-        .fontColor("#666666")
+        .fontColor($r("app.color.font_sub"))
       Image(image)
         .align(Alignment.Bottom)
         .margin(-2)
@@ -303,14 +323,114 @@ export struct HomeMainPageContent {
     .layoutWeight(1)
   }
 
+  @Builder
+  buildTitle(
+    title: string | Resource
+  ) {
+    Row() {
+      Text(title).fontWeight(FontWeight.Medium)
+      Blank().layoutWeight(1)
+      Text("更多 >").fontSize(14).fontColor($r("app.color.font_sub"))
+    }
+    .margin({
+      top: 10,
+      bottom: 5
+    })
+  }
+
+  @Builder
+  buildPopularPhones() {
+    Stack() {
+      Row() {
+        this.buildMostPopularPhone(this.popularPhones[0])
+        this.buildMostPopularPhone(this.popularPhones[1])
+      }
+      .layoutGravity(LocalizedAlignment.TOP)
+
+      Row() {
+        this.build2ndPopularPhone(this.popularPhones[2])
+        this.build2ndPopularPhone(this.popularPhones[3])
+        this.build2ndPopularPhone(this.popularPhones[4])
+      }
+      .backgroundColor("#ccffffff")
+      .margin(10)
+      .height(100)
+      .width("100%")
+      .borderRadius(10)
+      .layoutGravity(LocalizedAlignment.BOTTOM)
+      .backdropBlur(20)
+    }
+    .width("100%")
+    .height(270)
+    .backgroundColor($r("app.color.popular_phone_bg"))
+    .borderRadius(10)
+    .padding({left: 10, right: 10})
+  }
+
+  @Builder
+  buildMostPopularPhone(phone: Record<string, string | Resource>) {
+    Column() {
+      Text(phone["name"])
+        .fontWeight(FontWeight.Bold)
+        .fontSize(18)
+      Column() {
+        Text(phone["desc"])
+          .fontSize(12)
+      }
+      .borderRadius(100)
+      .borderWidth(1)
+      .width("100%")
+      .padding({top: 5, bottom: 5})
+      .margin({top: 5})
+      Image(phone["image"])
+        .layoutWeight(1)
+        .width("100%")
+        .objectFit(ImageFit.Auto)
+        .padding({left: 10, right: 10})
+    }
+    .width("50%")
+    .height("75%")
+    .padding({
+      left: 10,
+      right: 10,
+      top: 20
+    })
+  }
+
+  @Builder
+  build2ndPopularPhone(phone: Record<string, string | Resource>) {
+    Column() {
+      Image(phone["image"])
+        .layoutWeight(1)
+        .height("100%")
+        .objectFit(ImageFit.Auto)
+      Text(phone["name"])
+        .fontSize(11)
+      Text(phone["desc"])
+        .fontSize(10)
+        .fontColor($r("app.color.font_sub"))
+        .margin({top: 1})
+    }
+    .layoutWeight(1)
+    .padding(10)
+  }
+
   build() {
     Stack({ alignContent: Alignment.Top }) {
       Scroll() {
         Column() {
           this.buildAds()
-          this.buildObjectItemBar()
-          this.buildRecommendCard()
-          Column().height(999) // 占位内容
+          Column() {
+            this.buildObjectItemBar()
+            this.buildRecommendCard()
+            this.buildTitle("人气手机")
+            this.buildPopularPhones()
+          }
+          .width("100%")
+          .padding({
+            left: 10,
+            right: 10
+          })
         }
         .width("100%")
       }

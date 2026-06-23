@@ -15,6 +15,14 @@
     {
       "name": "font",
       "value": "#000000"
+    },
+    {
+      "name": "font_sub",
+      "value": "#666666"
+    },
+    {
+      "name": "popular_phone_bg",
+      "value": "#ecf4f7"
     }
   ]
 }
