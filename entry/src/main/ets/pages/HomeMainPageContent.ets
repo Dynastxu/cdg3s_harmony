@@ -4,10 +4,12 @@ export struct HomeMainPageContent {
     $r("app.media.ad1"),
     $r("app.media.ad2"),
     $r("app.media.ad3"),
-    $r("app.media.ad4")
+    $r("app.media.ad4"),
+    $r("app.media.ad5")
   ]
   @State isDarkAdBg: boolean[] = [
     true,
+    false,
     false,
     false,
     false
@@ -16,6 +18,7 @@ export struct HomeMainPageContent {
   // 这里使用是因为使用的图片尺寸与手机端不同，为保持观感添加的
   @State AdsBg: string[] | Resource = [
     "#000000",
+    "#F7F7F7",
     "#F7F7F7",
     "#F7F7F7",
     "#F7F7F7"
@@ -95,12 +98,14 @@ export struct HomeMainPageContent {
   buildAds() {
     Swiper() {
       ForEach(this.ads, (item: string | Resource, index: number) => {
-        Image(item)
-          .width("100%")
-          .height(150 + this.adsOffset)
-          .objectFit(ImageFit.Fill)
-          .padding({ top: this.adsOffset })
-          .background(this.AdsBg[index])
+        Row() {
+          Image(item)
+            .width("100%")
+            .objectFit(ImageFit.Auto)
+        }
+        .height(150 + this.adsOffset)
+        .alignItems(VerticalAlign.Bottom)
+        .background(this.AdsBg[index])
       })
     }
     .autoPlay(true)
@@ -116,7 +121,6 @@ export struct HomeMainPageContent {
 
   build() {
     Stack({alignContent: Alignment.Top}) {
-      // 底层：可滚动区域（广告等）
       Scroll() {
         Column() {
           this.buildAds()
