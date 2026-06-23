@@ -63,6 +63,8 @@ export struct HomeContent {
     }
     .onChange((index: number) => {
       this.currentTabIndex = index;
+      this.needFontColorReverse = false
+      this.needShowTabBg = false
     })
     .barWidth("70%")
     .clip(this.needShowTabBg)

@@ -1,5 +1,8 @@
+import { LengthUnit } from "@kit.ArkUI"
+
 @Component
 export struct HomeMainPageContent {
+  // ad5 是手机端图片，其余非手机端
   @State ads: string[] | Resource[] = [
     $r("app.media.ad1"),
     $r("app.media.ad2"),
@@ -29,13 +32,57 @@ export struct HomeMainPageContent {
     "搜索条目 2",
     "搜索条目 3"
   ]
+  @State ObjectItemImages: string[] | Resource[] = [
+    $r("app.media.icon_yjhx"),
+    $r("app.media.icon_xrfl"),
+    $r("app.media.icon_znjj"),
+    $r("app.media.icon_rcj"),
+    $r("app.media.icon_znsh"),
+    $r("app.media.icon_xszx"),
+    $r("app.media.icon_mqxq"),
+    $r("app.media.icon_shdq"),
+    $r("app.media.icon_scsl"),
+    $r("app.media.icon_sqk"),
+    $r("app.media.icon_gjbt"),
+    $r("app.media.icon_ds"),
+    $r("app.media.icon_sj"),
+    $r("app.media.icon_xmsx"),
+    $r("app.media.icon_xmrb"),
+    $r("app.media.icon_zncd"),
+    $r("app.media.icon_dnpp"),
+    $r("app.media.icon_kbx"),
+    $r("app.media.icon_xmzc"),
+    $r("app.media.icon_xmfb")
+  ]
+  @State ObjectItemText: string[] | Resource[] = [
+    "以旧换新",
+    "新人福利",
+    "智能家居",
+    "人车家",
+    "智能生活",
+    "学生专享",
+    "米圈星球",
+    "生活电器",
+    "商城送礼",
+    "省钱卡",
+    "国家补贴",
+    "电视",
+    "手机",
+    "小米上新",
+    "小米热榜",
+    "智能穿戴",
+    "电脑/平板",
+    "空冰洗",
+    "小米众筹",
+    "小米发布"
+  ]
   @State currentSearchIndex: number = 0
   @State isScrolledUpSomeDistance: boolean = false
   @State totalScrollOffset: number = 0
   onAdBgChange?: (isDark: boolean) => void
   onScrolledUpSomeDistance ?: (isMoreThan: boolean) => void
   private timer: number = -1
-  private adsOffset: number = 100
+  private adsOffset: number = 80
 
   aboutToAppear() {
     // 启动定时器，每隔 3 秒切换索引
@@ -119,11 +166,50 @@ export struct HomeMainPageContent {
     })
   }
 
+  @Builder
+  buildObjectItemBar() {
+    Scroll() {
+      Grid() {
+        ForEach(this.ObjectItemImages, (image: string | Resource, index: number) => {
+          this.buildObjectItem(image, this.ObjectItemText[index])
+        })
+      }
+      .columnsTemplate(Array(10).fill('1fr').join(' '))
+      .rowsTemplate("1fr 1fr")
+      .height(200)
+      .width("190%")
+    }
+    .scrollable(ScrollDirection.Horizontal)
+    .width("100%")
+    .margin({
+      left: 10,
+      right: 10
+    })
+    .scrollBar(BarState.On)
+    .scrollBarMargin({
+      start: {value: 135, unit: LengthUnit.VP},
+      end: {value: 135, unit: LengthUnit.VP}
+    })
+  }
+
+  @Builder
+  buildObjectItem(
+    image: string | Resource,
+    title: string | Resource
+  ) {
+    Column() {
+      Image(image).height(75).objectFit(ImageFit.Auto).margin(-5)
+      Text(title).fontSize(11)
+    }
+    .margin(10)
+  }
+
   build() {
     Stack({alignContent: Alignment.Top}) {
       Scroll() {
         Column() {
           this.buildAds()
+          this.buildObjectItemBar()
           Column().height(999) // 占位内容
         }
         .width("100%")
@@ -136,6 +222,7 @@ export struct HomeMainPageContent {
         }
       })
       .offset({ y: -50 })
+      .scrollBar(BarState.Off)
 
       // 固定搜索栏
       Column() {

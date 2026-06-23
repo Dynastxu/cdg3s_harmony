@@ -14,7 +14,7 @@ struct Index {
   ) {
     Column() {
       Image(this.currentTabIndex == index ? selectedIcon : icon).width(19)
-      Text(text).fontSize(14)
+      Text(text).fontSize(11)
     }
   }
 
