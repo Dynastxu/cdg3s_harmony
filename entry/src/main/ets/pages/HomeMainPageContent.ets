@@ -106,17 +106,12 @@ export struct HomeMainPageContent {
     .autoPlay(true)
     .onChange((index: number) => {
       this.currentAdIndex = index
+    })
+    .onAnimationStart((_index: number, targetIndex: number) => {
       if (this.onAdBgChange) {
-        this.onAdBgChange(this.isDarkAdBg[index])
+        this.onAdBgChange(this.isDarkAdBg[targetIndex])
       }
     })
-    .onAnimationStart((index: number) => {
-      if (this.onAdBgChange) {
-        this.onAdBgChange(this.isDarkAdBg[(index + 1) % this.ads.length])
-      }
-    })
-    .offset({ y: -50 })
-    .clip(false)
   }
 
   build() {
@@ -129,7 +124,6 @@ export struct HomeMainPageContent {
         }
         .width("100%")
       }
-      .clip(false)
       .onDidScroll((_xOffset: number, yOffset: number) => {
         this.totalScrollOffset += yOffset
         this.isScrolledUpSomeDistance = this.totalScrollOffset >= 50
@@ -137,6 +131,7 @@ export struct HomeMainPageContent {
           this.onScrolledUpSomeDistance(this.isScrolledUpSomeDistance)
         }
       })
+      .offset({ y: -50 })
 
       // 固定搜索栏
       Column() {

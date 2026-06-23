@@ -26,55 +26,45 @@ export struct HomeContent {
   }
 
   build() {
-    Stack({ alignContent: Alignment.TopStart }) {
-      if (this.needShowTabBg) {
-        Row()
-          .width('100%')
-          .height(50)  // 根据你的 TabBar 实际高度调整
-          .backgroundColor(this.tabBgColor)
-          .animation({duration: 200})
-      }
-
-      Tabs() {
-        TabContent() {
-          HomeMainPageContent({
-            onAdBgChange: (isDark: boolean) => {
-              this.needFontColorReverse = isDark
-            },
-            onScrolledUpSomeDistance: (isMoreThan: boolean) => {
-              this.needShowTabBg = isMoreThan
+    Tabs() {
+      TabContent() {
+        HomeMainPageContent({
+          onAdBgChange: (isDark: boolean) => {
+            this.needFontColorReverse = isDark
+          },
+          onScrolledUpSomeDistance: (isMoreThan: boolean) => {
+            this.needShowTabBg = isMoreThan
           }
-          })
-        }
-        .tabBar(this.buildTabBar(
-          "首页",
-          0
-        ))
-        .clip(false)
-
-        TabContent() {
-          Text("手机发布内容")
-        }
-        .tabBar(this.buildTabBar(
-          "手机发布",
-          1
-        ))
-
-        TabContent() {
-          Text("国补内容")
-        }
-        .tabBar(this.buildTabBar(
-          "国补",
-          2,
-          "#569976",
-          "#569976"
-        ))
+        })
       }
-      .onChange((index: number) => {
-        this.currentTabIndex = index;
-      })
-      .barWidth("70%")
-      .clip(this.needShowTabBg)
+      .tabBar(this.buildTabBar(
+        "首页",
+        0
+      ))
+      .clip(false)
+
+      TabContent() {
+        Text("手机发布内容")
+      }
+      .tabBar(this.buildTabBar(
+        "手机发布",
+        1
+      ))
+
+      TabContent() {
+        Text("国补内容")
+      }
+      .tabBar(this.buildTabBar(
+        "国补",
+        2,
+        "#569976",
+        "#569976"
+      ))
     }
+    .onChange((index: number) => {
+      this.currentTabIndex = index;
+    })
+    .barWidth("70%")
+    .clip(this.needShowTabBg)
   }
 }
