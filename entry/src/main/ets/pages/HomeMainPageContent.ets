@@ -1,18 +1,17 @@
 import { LengthUnit } from "@kit.ArkUI"
 
 @Component
+@Preview
 export struct HomeMainPageContent {
   // ad5 是手机端图片，其余非手机端
   @State ads: string[] | Resource[] = [
     $r("app.media.ad1"),
     $r("app.media.ad2"),
     $r("app.media.ad3"),
-    $r("app.media.ad4"),
     $r("app.media.ad5")
   ]
   @State isDarkAdBg: boolean[] = [
     true,
-    false,
     false,
     false,
     false
@@ -23,7 +22,6 @@ export struct HomeMainPageContent {
     "#000000",
     "#F7F7F7",
     "#F7F7F7",
-    "#F7F7F7",
     "#F7F7F7"
   ]
   @State currentAdIndex: number = 0
@@ -32,7 +30,7 @@ export struct HomeMainPageContent {
     "搜索条目 2",
     "搜索条目 3"
   ]
-  @State ObjectItemImages: string[] | Resource[] = [
+  @State objectItemImages: string[] | Resource[] = [
     $r("app.media.icon_yjhx"),
     $r("app.media.icon_xrfl"),
     $r("app.media.icon_znjj"),
@@ -54,7 +52,7 @@ export struct HomeMainPageContent {
     $r("app.media.icon_xmzc"),
     $r("app.media.icon_xmfb")
   ]
-  @State ObjectItemText: string[] | Resource[] = [
+  @State objectItemText: string[] | Resource[] = [
     "以旧换新",
     "新人福利",
     "智能家居",
@@ -79,6 +77,18 @@ export struct HomeMainPageContent {
   @State currentSearchIndex: number = 0
   @State isScrolledUpSomeDistance: boolean = false
   @State totalScrollOffset: number = 0
+  @State recommendItems: Record<string, string | Resource>[] = [
+    {
+      "title": "智慧厨房",
+      "subtitle": "国补至高优惠15%",
+      "image": $r("app.media.icon_zhcf")
+    },
+    {
+      "title": "青春运动季",
+      "subtitle": "限时限量抢好礼",
+      "image": $r("app.media.icon_qcydj")
+    }
+  ]
   onAdBgChange?: (isDark: boolean) => void
   onScrolledUpSomeDistance ?: (isMoreThan: boolean) => void
   private timer: number = -1
@@ -138,7 +148,7 @@ export struct HomeMainPageContent {
     .width("100%")
     .layoutGravity(LocalizedAlignment.CENTER)
     .animation({ duration: 0 }) // 由于父组件 Tab 背景色变更难以实现动画，这里暂时设为 0
-    .padding({bottom: 5})
+    .padding({ bottom: 5 })
   }
 
   @Builder
@@ -150,7 +160,7 @@ export struct HomeMainPageContent {
             .width("100%")
             .objectFit(ImageFit.Auto)
         }
-        .height(170 + this.adsOffset)
+        .height(200 + this.adsOffset)
         .alignItems(VerticalAlign.Bottom)
         .background(this.AdsBg[index])
       })
@@ -170,8 +180,8 @@ export struct HomeMainPageContent {
   buildObjectItemBar() {
     Scroll() {
       Grid() {
-        ForEach(this.ObjectItemImages, (image: string | Resource, index: number) => {
-          this.buildObjectItem(image, this.ObjectItemText[index])
+        ForEach(this.objectItemImages, (image: string | Resource, index: number) => {
+          this.buildObjectItem(image, this.objectItemText[index])
         })
       }
       .columnsTemplate(Array(10).fill('1fr').join(' '))
@@ -187,8 +197,8 @@ export struct HomeMainPageContent {
     })
     .scrollBar(BarState.On)
     .scrollBarMargin({
-      start: {value: 135, unit: LengthUnit.VP},
-      end: {value: 135, unit: LengthUnit.VP}
+      start: { value: 135, unit: LengthUnit.VP },
+      end: { value: 135, unit: LengthUnit.VP }
     })
   }
 
@@ -204,12 +214,102 @@ export struct HomeMainPageContent {
     .margin(10)
   }
 
+  @Builder
+  buildRecommendCard() {
+    Stack() {
+      Image($r("app.media.ad_hdplr"))
+        .height("100%")
+        .layoutGravity(LocalizedAlignment.START)
+        .borderRadius(10)
+
+      // 遮罩
+      Column()
+        .borderRadius(10)
+        .linearGradient({
+          direction: GradientDirection.Bottom,
+          colors: [["#ff888888", 0], ["#00ffffff", 1]]
+        })
+        .height("100%")
+        .width("100%")
+      Column()
+        .borderRadius(10)
+        .linearGradient({
+          direction: GradientDirection.Left,
+          colors: [["#ff888888", 0.4], ["#00ffffff", 1]]
+        })
+        .height("100%")
+        .width("100%")
+
+      Column() {
+        Text("黑电品类日")
+          .fontWeight(FontWeight.Bold)
+        Text("限量立减至高100元 >")
+          .fontSize(11)
+          .margin({top: 3})
+      }
+      .layoutGravity(LocalizedAlignment.TOP_START)
+      .alignItems(HorizontalAlign.Start)
+      .margin({
+        left: 10,
+        top: 10
+      })
+
+      Row() {
+        ForEach(this.recommendItems, (item: Record<string, string | Resource>) => {
+          this.buildRecommendCardItem(
+            item["title"],
+            item["subtitle"],
+            item["image"]
+          )
+        })
+      }
+      .height("100%")
+      .width("60%")
+      .layoutGravity(LocalizedAlignment.END)
+    }
+    .height(130)
+    .width("100%")
+    .padding({
+      left: 10,
+      right: 10
+    })
+    .clip(true)
+  }
+
+  @Builder
+  buildRecommendCardItem(
+    title: string | Resource,
+    subtitle: string | Resource,
+    image: string | Resource
+  ) {
+    Column() {
+      Text(title)
+        .fontWeight(FontWeight.Bold)
+        .fontSize(12)
+      Text(subtitle)
+        .fontSize(10)
+        .margin({top: 2})
+        .fontColor("#666666")
+      Image(image)
+        .align(Alignment.Bottom)
+        .margin(-2)
+        .layoutWeight(1)
+    }
+    .width(90)
+    .padding(5)
+    .margin({top: 10, bottom: 10, right: 10})
+    .borderRadius(5)
+    .backgroundColor("#ffffff")
+    .layoutWeight(1)
+  }
+
   build() {
-    Stack({alignContent: Alignment.Top}) {
+    Stack({ alignContent: Alignment.Top }) {
       Scroll() {
         Column() {
           this.buildAds()
           this.buildObjectItemBar()
+          this.buildRecommendCard()
           Column().height(999) // 占位内容
         }
         .width("100%")
@@ -221,7 +321,7 @@ export struct HomeMainPageContent {
           this.onScrolledUpSomeDistance(this.isScrolledUpSomeDistance)
         }
       })
-      .offset({ y: -this.adsOffset })
+      .margin({ top: -this.adsOffset })
       .scrollBar(BarState.Off)
 
       // 固定搜索栏
