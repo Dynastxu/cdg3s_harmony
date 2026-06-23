@@ -1,11 +1,24 @@
 import { HomeMainPageContent } from "./HomeMainPageContent"
+import emitter from '@ohos.events.emitter';
 
 @Component
 export struct HomeContent {
   @State currentTabIndex: number = 0
-  @State needFontColorReverse: boolean = false
-  @State needShowTabBg: boolean = false
+  @State @Watch("onNeedFontColorReverseChange") needFontColorReverse: boolean = false
+  @State @Watch("onNeedShowTabBg") needShowTabBg: boolean = false
   @State tabBgColor: string | Resource = "#ffffff"
+
+  aboutToAppear() {
+    setWindowSystemBarProperties(this.needFontColorReverse && !this.needShowTabBg ? "#ffffff" : "#000000")
+  }
+
+  onNeedFontColorReverseChange() {
+    setWindowSystemBarProperties(this.needFontColorReverse && !this.needShowTabBg ? "#ffffff" : "#000000")
+  }
+
+  onNeedShowTabBg() {
+    setWindowSystemBarProperties(this.needFontColorReverse && !this.needShowTabBg ? "#ffffff" : "#000000")
+  }
 
   @Builder
   buildTabBar(
@@ -68,5 +81,14 @@ export struct HomeContent {
     })
     .barWidth("70%")
     .clip(this.needShowTabBg)
+    .margin({top: 50})
   }
+}
+
+function setWindowSystemBarProperties(color: string | Resource) {
+  emitter.emit('changeStatusBar', {
+    data: {
+      contentColor: color
+    }
+  });
 }

@@ -82,7 +82,7 @@ export struct HomeMainPageContent {
   onAdBgChange?: (isDark: boolean) => void
   onScrolledUpSomeDistance ?: (isMoreThan: boolean) => void
   private timer: number = -1
-  private adsOffset: number = 80
+  private adsOffset: number = 120
 
   aboutToAppear() {
     // 启动定时器，每隔 3 秒切换索引
@@ -150,7 +150,7 @@ export struct HomeMainPageContent {
             .width("100%")
             .objectFit(ImageFit.Auto)
         }
-        .height(150 + this.adsOffset)
+        .height(170 + this.adsOffset)
         .alignItems(VerticalAlign.Bottom)
         .background(this.AdsBg[index])
       })
@@ -221,7 +221,7 @@ export struct HomeMainPageContent {
           this.onScrolledUpSomeDistance(this.isScrolledUpSomeDistance)
         }
       })
-      .offset({ y: -50 })
+      .offset({ y: -this.adsOffset })
       .scrollBar(BarState.Off)
 
       // 固定搜索栏

@@ -1,6 +1,7 @@
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
+import { emitter } from '@kit.BasicServicesKit';
 
 const DOMAIN = 0x0000;
 
@@ -28,6 +29,30 @@ export default class EntryAbility extends UIAbility {
         return;
       }
       hilog.info(DOMAIN, 'testTag', 'Succeeded in loading the content.');
+
+      try {
+        let windowClass = windowStage.getMainWindowSync();
+
+        // 注册事件监听，用于接收页面传来的状态栏颜色需求
+        emitter.on('changeStatusBar', (data: emitter.EventData) => {
+          if (windowClass && data?.data && typeof data.data === 'object') {
+            let color = data.data['contentColor'] as string;
+            windowClass.setWindowSystemBarProperties({
+              statusBarColor: '#00FFFFFF',
+              statusBarContentColor: color
+            }).catch(() => {
+              hilog.error(DOMAIN, 'window', 'Error when setWindowSystemBarProperties')
+            });
+          }
+        });
+
+        // 设置沉浸模式
+        windowClass.setWindowLayoutFullScreen(true).catch(() => {
+          hilog.error(DOMAIN, 'window', 'Error when setWindowLayoutFullScreen')
+        });
+      } catch (error) {
+        hilog.error(DOMAIN, 'window', 'Error when getMainWindowSync')
+      }
     });
   }
 
