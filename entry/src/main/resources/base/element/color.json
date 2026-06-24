@@ -23,6 +23,14 @@
     {
       "name": "popular_phone_bg",
       "value": "#ecf4f7"
+    },
+    {
+      "name": "smart_gadget_bg",
+      "value": "#ecf4f7"
+    },
+    {
+      "name": "bg_gradient",
+      "value": "#f3f3f3"
     }
   ]
 }

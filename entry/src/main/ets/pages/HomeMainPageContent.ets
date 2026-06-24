@@ -1,4 +1,4 @@
-import { BorderRadiusMode, LengthUnit } from "@kit.ArkUI"
+import { LengthUnit } from "@kit.ArkUI"
 
 @Component
 @Preview
@@ -116,6 +116,51 @@ export struct HomeMainPageContent {
       "image": $r("app.media.turbo_5_max")
     }
   ]
+  @State swiperSmartGadgets: Record<string, string | Resource>[] = [
+    {
+      "name": "强劲风Pro超1.5匹",
+      "desc": "强性能旗舰冷暖实力强一档",
+      "image": $r("app.media.qjf_pro_c1_5p")
+    },
+    {
+      "name": "561L对开",
+      "desc": "全域离子净化",
+      "image": $r("app.media.561ldk")
+    },
+    {
+      "name": "室外摄像机4 4G双摄",
+      "desc": "免费流量 双500万像素",
+      "image": $r("app.media.swsxj4_4gss")
+    },
+    {
+      "name": "REDMI G24Q",
+      "desc": "24英寸2K高清显示器",
+      "image": $r("app.media.redmi_g24q")
+    }
+  ]
+  @State smartGadgets: Record<string, string | Resource>[] = [
+    {
+      "name": "强劲风Pro",
+      "desc": "至高补贴15%",
+      "image": $r("app.media.qjf_pro_c1_5p")
+    },
+    {
+      "name": "561L对开",
+      "desc": "国补至高享85折",
+      "image": $r("app.media.561ldk")
+    },
+    {
+      "name": "4G双摄",
+      "desc": "AI智能识别",
+      "image": $r("app.media.swsxj4_4gss")
+    },
+    {
+      "name": "REDMI G24Q",
+      "desc": "下单赠送机械键盘",
+      "image": $r("app.media.redmi_g24q")
+    }
+  ]
+
   onAdBgChange?: (isDark: boolean) => void
   onScrolledUpSomeDistance ?: (isMoreThan: boolean) => void
   private timer: number = -1
@@ -325,12 +370,13 @@ export struct HomeMainPageContent {
 
   @Builder
   buildTitle(
-    title: string | Resource
+    title: string | Resource,
+    hasMore: boolean = true
   ) {
     Row() {
       Text(title).fontWeight(FontWeight.Medium)
       Blank().layoutWeight(1)
-      Text("更多 >").fontSize(14).fontColor($r("app.color.font_sub"))
+      if (hasMore) Text("更多 >").fontSize(14).fontColor($r("app.color.font_sub"))
     }
     .margin({
       top: 10,
@@ -340,6 +386,7 @@ export struct HomeMainPageContent {
 
   @Builder
   buildPopularPhones() {
+    this.buildTitle("人气手机")
     Stack() {
       Row() {
         this.buildMostPopularPhone(this.popularPhones[0])
@@ -415,6 +462,77 @@ export struct HomeMainPageContent {
     .padding(10)
   }
 
+  @Builder
+  buildSmartGadgets() {
+    this.buildTitle("智能好物")
+    Grid() {
+      GridItem() {
+        Swiper() {
+          ForEach(this.swiperSmartGadgets, (item: Record<string, string | Resource>) => {
+            Column() {
+              Text(item["name"])
+                .fontWeight(FontWeight.Medium)
+                .fontSize(13)
+              Blank().height(4)
+              Text(item["desc"])
+                .fontSize(10)
+                .fontColor($r("app.color.font_sub"))
+              Blank().height(4)
+              Text("立即查看 >")
+                .fontSize(10)
+              Image(item["image"])
+                .layoutWeight(1)
+            }
+            .padding(20)
+          })
+        }
+        .autoPlay(true)
+      }
+      .columnStart(0).columnEnd(0)
+      .rowStart(0).rowEnd(1)
+      .backgroundColor($r("app.color.smart_gadget_bg"))
+      .borderRadius(10)
+
+      ForEach(this.smartGadgets, (item: Record<string, string | Resource>) => {
+        GridItem() {
+          Row() {
+            Column() {
+              Text(item["name"])
+                .fontWeight(FontWeight.Medium)
+                .fontSize(13)
+              Blank().height(4)
+              Text(item["desc"])
+                .fontSize(10)
+                .fontColor($r("app.color.font_sub"))
+              Blank().height(4)
+              Text("立即查看 >")
+                .fontSize(10)
+            }
+            .alignItems(HorizontalAlign.Start)
+            .layoutWeight(2)
+
+            Image(item["image"])
+              .layoutWeight(1)
+          }
+          .backgroundColor($r("app.color.smart_gadget_bg"))
+          .borderRadius(10)
+          .height("100%")
+          .padding(5)
+        }
+      })
+    }
+    .columnsTemplate("1fr 1fr")
+    .rowsTemplate("1fr 1fr 1fr")
+    .width("100%")
+    .height(300)
+    .columnsGap(5)
+    .rowsGap(5)
+  }
+
+  @Builder
+  buildSmartGadgetsSwiper() {
+  }
+
   build() {
     Stack({ alignContent: Alignment.Top }) {
       Scroll() {
@@ -423,8 +541,8 @@ export struct HomeMainPageContent {
           Column() {
             this.buildObjectItemBar()
             this.buildRecommendCard()
-            this.buildTitle("人气手机")
             this.buildPopularPhones()
+            this.buildSmartGadgets()
           }
           .width("100%")
           .padding({
@@ -433,6 +551,9 @@ export struct HomeMainPageContent {
           })
         }
         .width("100%")
+        // .linearGradient({
+        //   colors: [[$r("app.color.background"), 0], [$r("app.color.bg_gradient"), 1]]
+        // })
       }
       .onDidScroll((_xOffset: number, yOffset: number) => {
         this.totalScrollOffset += yOffset
@@ -443,7 +564,6 @@ export struct HomeMainPageContent {
       })
       .margin({ top: -this.adsOffset })
       .scrollBar(BarState.Off)
-
       // 固定搜索栏
       Column() {
         this.buildSearchBar()
