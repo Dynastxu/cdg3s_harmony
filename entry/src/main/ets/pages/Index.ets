@@ -1,3 +1,4 @@
+import { ClassificationContent } from './ClassificationContent';
 import { HomeContent } from './HomeContent';
 
 @Entry
@@ -34,7 +35,7 @@ struct Index {
         ))
 
         TabContent() {
-          Text("分类内容")
+          ClassificationContent()
         }
         .tabBar(this.buildTabBar(
           $r("app.media.layout_list"),
