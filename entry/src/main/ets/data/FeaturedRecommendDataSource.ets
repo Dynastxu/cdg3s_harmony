@@ -53,7 +53,19 @@ export class FeaturedRecommendDataSource implements IDataSource {
       isStartingPrice: false
     }
   ]
+  private dataArraySpanShot: GoodsInfo[]
   private listeners: DataChangeListener[] = []
+  private uidCounter: number = 0  // 唯一 id 计数器
+
+  constructor() {
+    // 如果原始数据没有 uid，这里补上
+    this.dataArray.forEach((item) => {
+      item.uid = `${this.uidCounter++}`
+
+    })
+    this.dataArraySpanShot = this.dataArray
+  }
+
 
   totalCount(): number {
     return this.dataArray.length
@@ -82,12 +94,23 @@ export class FeaturedRecommendDataSource implements IDataSource {
 
   public pushData(items: GoodsInfo[]) {
     this.dataArray.push(...items)
-    this.notifyDataAdd(this.dataArray.length - items.length)
+    this.notifyDataAdd(items.length)
   }
 
   private notifyDataAdd(index: number): void {
     this.listeners.forEach(listener => {
       listener.onDataAdd(index)
     })
+  }
+
+  // 加载更多
+  public loadMore(): void {
+    let newArray: GoodsInfo[] = []
+    for (let index = 0; index < this.dataArraySpanShot.length; index++) {
+      let element: GoodsInfo = this.dataArraySpanShot[index];
+      element.uid = `${this.uidCounter++}`
+      newArray.push(element)
+    }
+    this.pushData(newArray)
   }
 }

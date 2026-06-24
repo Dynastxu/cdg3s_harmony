@@ -546,51 +546,54 @@ export struct HomeMainPageContent {
   buildFeaturedRecommendations() {
     this.buildTitle("精选推荐", false)
     WaterFlow() {
-      LazyForEach(this.FeaturedRecommendDataSource, (item: GoodsInfo) => {
-        FlowItem() {
-          Column() {
-            Image(item.image)
-              .width("100%")
-              .objectFit(ImageFit.Auto)
+      LazyForEach(this.FeaturedRecommendDataSource,
+        (item: GoodsInfo) => {
+          FlowItem() {
             Column() {
-              Text(item.name)
-                .fontWeight(FontWeight.Medium)
-              Text(item.desc)
-                .fontSize(11)
-                .textOverflow({ overflow: TextOverflow.Ellipsis })
-                .fontColor($r("app.color.font_sub"))
-              Blank().height(10)
-              Row() {
-                Text(`￥${item.price}`)
+              Image(item.image)
+                .width("100%")
+                .objectFit(ImageFit.Auto)
+              Column() {
+                Text(item.name)
                   .fontWeight(FontWeight.Medium)
-                if (item.isStartingPrice) {
-                  Text("起")
-                    .fontSize(13)
+                Text(item.desc)
+                  .fontSize(11)
+                  .textOverflow({ overflow: TextOverflow.Ellipsis })
+                  .fontColor($r("app.color.font_sub"))
+                Blank().height(10)
+                Row() {
+                  Text(`￥${item.price}`)
                     .fontWeight(FontWeight.Medium)
+                  if (item.isStartingPrice) {
+                    Text("起")
+                      .fontSize(13)
+                      .fontWeight(FontWeight.Medium)
+                  }
+                  if (item.originalPrice) {
+                    Blank().width(2)
+                    Text(`￥${item.originalPrice}`)
+                      .fontSize(14)
+                      .fontColor($r("app.color.font_unimportant"))
+                      .decoration({
+                        type: TextDecorationType.LineThrough,
+                        color: $r("app.color.font_unimportant")
+                      })
+                  }
+                  Blank().layoutWeight(1)
                 }
-                if (item.originalPrice) {
-                  Blank().width(2)
-                  Text(`￥${item.originalPrice}`)
-                    .fontSize(14)
-                    .fontColor($r("app.color.font_unimportant"))
-                    .decoration({
-                      type: TextDecorationType.LineThrough,
-                      color: $r("app.color.font_unimportant")
-                    })
-                }
-                Blank().layoutWeight(1)
+                .alignItems(VerticalAlign.Bottom)
               }
-              .alignItems(VerticalAlign.Bottom)
+              .alignItems(HorizontalAlign.Start)
+              .backgroundColor("#f8f8f8")
+              .width("100%")
+              .padding(10)
             }
-            .alignItems(HorizontalAlign.Start)
-            .backgroundColor("#f8f8f8")
-            .width("100%")
-            .padding(10)
           }
-        }
-        .backgroundColor($r("app.color.background"))
-        .borderRadius(10)
-      })
+          .backgroundColor($r("app.color.background"))
+          .borderRadius(10)
+        },
+        (item: GoodsInfo) => item.uid
+      )
     }
     .columnsTemplate("1fr 1fr")
     .columnsGap(10)
@@ -613,6 +616,7 @@ export struct HomeMainPageContent {
             left: 10,
             right: 10
           })
+
           Stack({ alignContent: Alignment.Top }) {
             Column()
               .linearGradient({
@@ -640,9 +644,7 @@ export struct HomeMainPageContent {
       .scrollBar(BarState.Off)
       .onReachEnd(() => {
         // 使用 concat 或展开运算符创建新数组
-        this.FeaturedRecommendDataSource.pushData(
-          this.FeaturedRecommendDataSource.getDataArray()
-        )
+        this.FeaturedRecommendDataSource.loadMore()
         hilog.info(DOMAIN, "load", "loading content")
       })
 

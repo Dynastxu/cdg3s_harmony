@@ -1,5 +1,6 @@
 export interface GoodsInfo {
   id: number
+  uid?: string
   name: string | Resource
   price: number
   originalPrice?: number
