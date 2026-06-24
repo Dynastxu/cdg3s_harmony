@@ -643,7 +643,6 @@ export struct HomeMainPageContent {
       .margin({ top: -this.adsOffset })
       .scrollBar(BarState.Off)
       .onReachEnd(() => {
-        // 使用 concat 或展开运算符创建新数组
         this.FeaturedRecommendDataSource.loadMore()
         hilog.info(DOMAIN, "load", "loading content")
       })
