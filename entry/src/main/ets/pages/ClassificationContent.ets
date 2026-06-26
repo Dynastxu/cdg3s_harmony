@@ -1,13 +1,15 @@
 import hilog from "@ohos.hilog"
-import { ClassificationRootDataSource } from "../data/ClassificationRootDataSource"
+import { ClassificationDataSource, ClassificationRootDataSource } from "../data/ClassificationDataSource"
 import { Classification } from "../data/entity"
 
 const DOMAIN = 0x0002
 
 @Component
 export struct ClassificationContent {
-  @State selection: number = 0
+  @State selection: number = -1
+  @State childSelection: number = 0
   @State private rootDataSource: ClassificationRootDataSource = new ClassificationRootDataSource()
+  @State private dataSource: ClassificationDataSource = new ClassificationDataSource(-1)
 
   @Builder
   buildClassification(index: number, name: string | Resource) {
@@ -25,14 +27,48 @@ export struct ClassificationContent {
     }
     .onClick(() => {
       this.selection = index
-      hilog.info(DOMAIN, 'select', `selected index: ${index}`)
+      this.childSelection = 0
+      const selectionId = this.rootDataSource.getData(index).id
+      this.dataSource.reloadWithId(selectionId)
+      hilog.info(DOMAIN, 'select', `selection id: ${selectionId}`)
     })
     .height(50)
   }
 
   @Builder
   buildClassificationContent() {
+    if (this.selection == -1) {
 
+    } else {
+      Column() {
+        Scroll() {
+          Row() {
+            LazyForEach(this.dataSource,
+              (item: Classification, index: number) => {
+                Text(item.name)
+                  .height('100%')
+                  .padding({ left: 5, right: 5 })
+                  .margin({left: 5, right: 5})
+                  .backgroundColor(this.childSelection == index ? '#ececec' : Color.Transparent)
+                  .onClick(() => {
+                    this.childSelection = index
+                  })
+                  .fontSize(14)
+                  .borderRadius(5)
+              },
+              (item: Classification) => item.id.toString()
+            )
+          }
+          .alignItems(VerticalAlign.Center)
+          .padding({top: 10})
+        }
+        .scrollable(ScrollDirection.Horizontal)
+        .scrollBar(BarState.Off)
+        .height(30)
+      }
+      .width('100%')
+      .layoutWeight(1)
+    }
   }
 
   build() {
@@ -68,7 +104,8 @@ export struct ClassificationContent {
         // 左侧
         Scroll() {
           Column() {
-            LazyForEach(this.rootDataSource, (item: Classification , index: number) => {
+            this.buildClassification(-1, "推荐")
+            LazyForEach(this.rootDataSource, (item: Classification, index: number) => {
               this.buildClassification(index, item.name)
             })
           }
@@ -80,12 +117,12 @@ export struct ClassificationContent {
         // 右侧
         Scroll() {
           Column() {
+            this.buildClassificationContent()
           }
         }
         .layoutWeight(2)
       }
       .layoutWeight(1)
-
     }
     .margin({ top: $r("app.integer.safe_area_top") })
   }

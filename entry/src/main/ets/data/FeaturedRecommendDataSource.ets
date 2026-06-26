@@ -6,7 +6,7 @@ export class FeaturedRecommendDataSource extends BaseDataSource<GoodsInfo> {
   private uidCounter: number = 0  // 唯一 id 计数器
 
   constructor() {
-    super()
+    super(null)
 
     const fakeData: GoodsInfo[] = [
       {
