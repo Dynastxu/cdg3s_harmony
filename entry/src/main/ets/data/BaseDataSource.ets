@@ -8,8 +8,8 @@ export abstract class BaseDataSource<T> implements IDataSource {
   protected listeners: DataChangeListener[] = []
   protected isLoadingData: boolean = false
 
-  constructor(url: string | null) {
-    if (url != null) this.getDataFrom(url)
+  constructor(url: string | null, onLoadOver?: () => void) {
+    if (url != null) this.getDataFrom(url, onLoadOver)
   }
 
   totalCount(): number {
@@ -37,12 +37,12 @@ export abstract class BaseDataSource<T> implements IDataSource {
     }
   }
 
-  protected reloadDataFrom(url: string) {
+  protected reloadDataFrom(url: string, onReloadOver?: () => void) {
     this.data = []
-    this.getDataFrom(url)
+    this.getDataFrom(url, onReloadOver)
   }
 
-  protected getDataFrom(url: string) {
+  protected getDataFrom(url: string, onReloadOver?: () => void) {
     hilog.info(DOMAIN, "netService", `从 ${url} 获取数据`)
 
     const httpRequest: http.HttpRequest = http.createHttp()
@@ -51,12 +51,15 @@ export abstract class BaseDataSource<T> implements IDataSource {
     httpRequest.request(url, (err: BusinessError, res: http.HttpResponse) => {
       if (err == null) {
         this.data = JSON.parse(res.result as string) as T[]
-        hilog.info(DOMAIN, "netService", `获取数据成功 (${this.data.length})`)
+        hilog.info(DOMAIN, "netService", `获取数据成功 (${this.data.length})\n${res.result as string}`)
       } else {
         hilog.error(DOMAIN, "netService", `获取数据失败：${err.message}`)
       }
       httpRequest.destroy()
       this.notifyDataRefresh()
+      if (onReloadOver) {
+        onReloadOver()
+      }
       this.isLoadingData = false
     })
   }

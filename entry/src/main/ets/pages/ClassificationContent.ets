@@ -1,8 +1,18 @@
 import hilog from "@ohos.hilog"
-import { ClassificationDataSource, ClassificationRootDataSource } from "../data/ClassificationDataSource"
-import { Classification } from "../data/entity"
+import { HOST } from "../config"
+import {
+  ClassificationDataSource,
+  ClassificationRootDataSource,
+  ClassificationGoodsDataSource
+} from "../data/ClassificationDataSource"
+import { Classification, Goods } from "../data/entity"
 
 const DOMAIN = 0x0002
+
+enum GoodsItemBuildType {
+  List,
+  Grid
+}
 
 @Component
 export struct ClassificationContent {
@@ -10,6 +20,7 @@ export struct ClassificationContent {
   @State childSelection: number = 0
   @State private rootDataSource: ClassificationRootDataSource = new ClassificationRootDataSource()
   @State private dataSource: ClassificationDataSource = new ClassificationDataSource(-1)
+  @State private goodsDataSourceMap: Map<number, ClassificationGoodsDataSource> = new Map()
 
   @Builder
   buildClassification(index: number, name: string | Resource) {
@@ -43,14 +54,16 @@ export struct ClassificationContent {
 
     } else {
       Column() {
+        // 上方分类选项
         Scroll() {
           Row() {
-            LazyForEach(this.dataSource,
+            LazyForEach(
+              this.dataSource,
               (item: Classification, index: number) => {
                 Text(item.name)
                   .height('100%')
                   .padding({ left: 5, right: 5 })
-                  .margin({left: 5, right: 5})
+                  .margin({ left: 5, right: 5 })
                   .backgroundColor(this.childSelection == index ? '#ececec' : Color.Transparent)
                   .onClick(() => {
                     this.childSelection = index
@@ -62,15 +75,84 @@ export struct ClassificationContent {
             )
           }
           .alignItems(VerticalAlign.Center)
-          .padding({top: 10})
+          .padding({ top: 10 })
         }
         .scrollable(ScrollDirection.Horizontal)
         .scrollBar(BarState.Off)
         .height(30)
+
+        Column()
+          .borderWidth(1)
+          .borderColor('#ececec')
+          .width('100%')
+          .height(1)
+          .margin({top: 10, bottom: 10})
+
+        // 下方分类内容
+        Column() {
+          ForEach(
+            this.dataSource.getFullData(),
+            (item: Classification, index: number) => {
+              Text(item.name)
+                .alignSelf(ItemAlign.Start)
+                .width('100%')
+                .fontWeight(FontWeight.Bold)
+              Column() {
+                LazyForEach(
+                  this.getGoodsDataSource(item.id),
+                  (item: Goods, index: number) => {
+                    this.buildGoodsItem(item)
+                  },
+                  (item: Goods) => item.id.toString()
+                )
+              }
+              .width('100%')
+            },
+            (item: Classification) => item.id.toString()
+          )
+        }
+        .width('100%')
+        .layoutWeight(1)
       }
       .width('100%')
-      .layoutWeight(1)
+      .height('100%')
     }
+  }
+
+  private getGoodsDataSource(categoryId: number): ClassificationGoodsDataSource {
+    let ds = this.goodsDataSourceMap.get(categoryId)
+    if (!ds) {
+      ds = new ClassificationGoodsDataSource(categoryId)
+      this.goodsDataSourceMap.set(categoryId, ds)
+    }
+    return ds
+  }
+
+  @LocalBuilder
+  buildGoodsItem(goods: Goods, buildType: GoodsItemBuildType = GoodsItemBuildType.List, onClick?: () => void) {
+    Row() {
+      Image(`http://${HOST}${goods.mainImage?.imagePath}`)
+        .width(80)
+        .height(80)
+        .objectFit(ImageFit.Cover)
+        .borderRadius(8)
+      Column() {
+        Text(goods.name)
+        Row() {
+          Text('￥').fontSize(10)
+          Text(`${goods.price}`)
+          if (goods.isStartingPrice) {
+            Text('起').fontSize(10)
+          }
+          // TODO 商品标签
+        }
+        .alignItems(VerticalAlign.Bottom)
+      }
+      .layoutWeight(1)
+      .alignItems(HorizontalAlign.Start)
+    }
+    .padding(5)
+    .backgroundColor('#f8f8f8')
   }
 
   build() {
@@ -118,11 +200,10 @@ export struct ClassificationContent {
 
         // 右侧
         Scroll() {
-          Column() {
-            this.buildClassificationContent()
-          }
+          this.buildClassificationContent()
         }
         .layoutWeight(2)
+        .padding({left: 5, right: 5})
       }
       .layoutWeight(1)
     }
