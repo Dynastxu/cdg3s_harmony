@@ -1,5 +1,5 @@
 @Component
-export struct GoodDetails {
+struct GoodDetailsPage {
   @Consume navPathStack: NavPathStack
 
   build() {
@@ -14,5 +14,5 @@ export struct GoodDetails {
 
 @Builder
 export function GoodDetailsPageBuilder() {
-  GoodDetails()
+  GoodDetailsPage()
 }

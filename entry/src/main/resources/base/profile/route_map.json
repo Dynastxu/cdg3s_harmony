@@ -2,8 +2,18 @@
   "routerMap": [
     {
       "name": "GoodsDetails",
-      "pageSourceFile": "src/main/ets/pages/GoodsDetails.ets",
+      "pageSourceFile": "src/main/ets/pages/GoodsDetailsPage.ets",
       "buildFunction": "GoodDetailsPageBuilder"
+    },
+    {
+      "name": "Login",
+      "pageSourceFile": "src/main/ets/pages/LoginPage.ets",
+      "buildFunction": "LoginPageBuilder"
+    },
+    {
+      "name": "Register",
+      "pageSourceFile": "src/main/ets/pages/RegisterPage.ets",
+      "buildFunction": "RegisterPageBuilder"
     }
   ]
 }

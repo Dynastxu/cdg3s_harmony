@@ -1,5 +1,5 @@
+import { setWindowSystemBarColor } from "../utils"
 import { HomeMainPageContent } from "./HomeMainPageContent"
-import emitter from '@ohos.events.emitter';
 
 @Component
 export struct HomeContent {
@@ -9,15 +9,15 @@ export struct HomeContent {
   @State tabBgColor: string | Resource = "#ffffff"
 
   aboutToAppear() {
-    setWindowSystemBarProperties(this.needFontColorReverse && !this.needShowTabBg ? "#ffffff" : "#000000")
+    setWindowSystemBarColor(this.needFontColorReverse && !this.needShowTabBg ? "#ffffff" : "#000000")
   }
 
   onNeedFontColorReverseChange() {
-    setWindowSystemBarProperties(this.needFontColorReverse && !this.needShowTabBg ? "#ffffff" : "#000000")
+    setWindowSystemBarColor(this.needFontColorReverse && !this.needShowTabBg ? "#ffffff" : "#000000")
   }
 
   onNeedShowTabBg() {
-    setWindowSystemBarProperties(this.needFontColorReverse && !this.needShowTabBg ? "#ffffff" : "#000000")
+    setWindowSystemBarColor(this.needFontColorReverse && !this.needShowTabBg ? "#ffffff" : "#000000")
   }
 
   @Builder
@@ -83,12 +83,4 @@ export struct HomeContent {
     .clip(this.needShowTabBg)
     .margin({top: $r("app.integer.safe_area_top")})
   }
-}
-
-function setWindowSystemBarProperties(color: string | Resource) {
-  emitter.emit('changeStatusBar', {
-    data: {
-      contentColor: color
-    }
-  });
 }

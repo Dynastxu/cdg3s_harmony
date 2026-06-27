@@ -1,5 +1,7 @@
+import { setWindowSystemBarColor } from '../utils';
 import { ClassificationContent } from './ClassificationContent';
 import { HomeContent } from './HomeContent';
+import { ProfileContent } from './ProfileContent';
 
 @Entry
 @Component
@@ -65,7 +67,7 @@ struct Index {
         ))
 
         TabContent() {
-          Text('我的内容')
+          ProfileContent()
         }
         .tabBar(this.buildTabBar(
           $r("app.media.user_round"),
@@ -73,6 +75,9 @@ struct Index {
           "我的",
           4
         ))
+        .onWillShow(() => {
+          setWindowSystemBarColor('#000000')
+        })
       }
       .barPosition(BarPosition.End)
       .barBackgroundColor($r("app.color.background"))

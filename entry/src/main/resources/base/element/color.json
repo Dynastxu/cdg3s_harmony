@@ -9,6 +9,10 @@
       "value": "#fc661c"
     },
     {
+      "name": "theme_light",
+      "value": "#FFFFCDB3"
+    },
+    {
       "name": "background",
       "value": "#ffffff"
     },
