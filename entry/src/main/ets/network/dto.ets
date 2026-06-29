@@ -1,3 +1,8 @@
+interface PostRequest {
+  success: boolean
+  message: string
+}
+
 export interface RegisterRequest {
   username: string
   password: string
@@ -17,4 +22,8 @@ export interface LoginResponse {
   success: boolean
   message: string
   token: string
+}
+
+export interface GetNicknameResponse{
+  nickname: string
 }

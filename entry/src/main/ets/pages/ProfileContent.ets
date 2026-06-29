@@ -1,6 +1,11 @@
+import { isBlank } from "../utils/function"
+
 @Component
 export struct ProfileContent {
   @Consume navPathStack: NavPathStack
+  @StorageProp('nickname') nickname?: string = AppStorage.get('nickname')
+  @StorageProp('username') username?: string = AppStorage.get('username')
+  @StorageProp('login_token') token?: string = AppStorage.get('login_token')
 
   build() {
     Scroll() {
@@ -9,8 +14,9 @@ export struct ProfileContent {
           Image($r('app.media.circle_user_round'))
             .width(50)
           Blank().width(5)
-          Text('登录/注册 >')
+          Text(isBlank(this.token) ? '登录/注册 >' : isBlank(this.nickname) ? this.username : this.nickname)
             .layoutWeight(1)
+            .height('100%')
             .onClick(() => {
               this.navPathStack.pushPathByName('Login', null)
             })

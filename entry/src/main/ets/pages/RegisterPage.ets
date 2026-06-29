@@ -1,4 +1,4 @@
-import { isBlank } from "../utils/base"
+import { isBlank } from "../utils/function"
 import { register } from "../network/register"
 import { showToast } from "../utils/ui"
 

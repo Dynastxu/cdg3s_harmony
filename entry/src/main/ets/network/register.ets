@@ -1,21 +1,20 @@
 import { HOST } from "../config"
 import { RegisterRequest, RegisterResponse } from "./dto"
 import { http } from "@kit.NetworkKit"
+import { SOFPara} from "../utils/interface"
 
-export interface RegisterAttribute {
+export interface RegisterPara extends SOFPara {
   username: string
   password: string
-  onSuccess?: (msg: string) => void
-  onFail?: (msg: string) => void
 }
 
-export function register(attr: RegisterAttribute) {
+export function register(para: RegisterPara) {
   const url = `http://${HOST}/auth/register`
   const httpRequest = http.createHttp()
 
   const requestData: RegisterRequest = {
-    username: attr.username,
-    password: attr.password
+    username: para.username,
+    password: para.password
   }
 
   httpRequest.request(url, {
@@ -28,18 +27,18 @@ export function register(attr: RegisterAttribute) {
     httpRequest.destroy()
 
     if (err) {
-      if (attr.onFail) attr.onFail(`网络错误：${err.message}`)
+      if (para.onFail) para.onFail(`网络错误：${err.message}`)
       return
     }
     try {
       const response = JSON.parse(res.result as string) as RegisterResponse
       if (response.success) {
-        if (attr.onSuccess) attr.onSuccess(response.message || '注册成功')
+        if (para.onSuccess) para.onSuccess(response.message || '注册成功')
       } else {
-        if (attr.onFail) attr.onFail(response.message || '注册失败')
+        if (para.onFail) para.onFail(response.message || '注册失败')
       }
     } catch (e) {
-      if (attr.onFail) attr.onFail(`注册失败：${e}`)
+      if (para.onFail) para.onFail(`注册失败：${e}`)
     }
   })
 }

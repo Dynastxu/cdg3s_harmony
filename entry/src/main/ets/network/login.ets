@@ -1,21 +1,28 @@
 import { HOST } from "../config"
 import { http } from "@kit.NetworkKit"
-import { LoginRequest, LoginResponse } from "./dto"
+import { GetNicknameResponse, LoginRequest, LoginResponse } from "./dto"
+import { SOFPara} from "../utils/interface"
+import { hilog } from "@kit.PerformanceAnalysisKit"
 
-export interface LoginAttr {
+const DOMAIN = 0x0007
+
+export interface LoginPara extends SOFPara {
   username: string
   password: string
-  onSuccess?: (msg: string) => void
-  onFail?: (msg: string) => void
 }
 
-export function login(attr: LoginAttr) {
+export interface GetNicknamePara extends SOFPara<(nickname: string) => void> {
+  username: string,
+  token: string
+}
+
+export function login(para: LoginPara) {
   const url = `http://${HOST}/auth/login`
   const httpRequest = http.createHttp()
 
   const requestData: LoginRequest = {
-    username: attr.username,
-    password: attr.password
+    username: para.username,
+    password: para.password
   }
 
   httpRequest.request(url, {
@@ -28,18 +35,61 @@ export function login(attr: LoginAttr) {
     httpRequest.destroy()
 
     if (err) {
-      if (attr.onFail) attr.onFail(`网络错误：${err.message}`)
-      return
-    }
-    try {
-      const response = JSON.parse(res.result as string) as LoginResponse
-      if (response.success && response.token) {
-        if (attr.onSuccess) attr.onSuccess(response.message || '登录成功')
-      } else {
-        if (attr.onFail) attr.onFail(response.message || '登录失败')
+      if (para.onFail) para.onFail(`网络错误：${err.message}`)
+    } else {
+      try {
+        const response = JSON.parse(res.result as string) as LoginResponse
+        if (response.success && response.token) {
+          AppStorage.set('login_token', response.token)
+          AppStorage.set('username', para.username)
+          getNickname({
+            username: para.username,
+            token: response.token,
+            onSuccess: (nickname: string) => {
+              AppStorage.set('nickname', nickname)
+            },
+            onFail: (msg: string) => {
+              hilog.error(DOMAIN, 'netService', `获取昵称失败：${msg}`)
+            }
+          })
+          if (para.onSuccess) {
+            para.onSuccess(response.message || '登录成功')
+          }
+        } else {
+          if (para.onFail) {
+            para.onFail(response.message || '登录失败')
+          }
+        }
+      } catch (e) {
+        if (para.onFail) para.onFail(`登录失败：${e}`)
       }
-    } catch (e) {
-      if (attr.onFail) attr.onFail(`登录失败：${e}`)
+    }
+  })
+}
+
+export function getNickname(para: GetNicknamePara) {
+  const url = `http://${HOST}/user/nickname?username=${encodeURIComponent(para.username)}`
+  const httpRequest = http.createHttp()
+
+  httpRequest.request(url, {
+    method: http.RequestMethod.GET,
+    header: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + para.token
+    }
+  }, (err: BusinessError, res: http.HttpResponse) => {
+    httpRequest.destroy()
+
+    if (err) {
+      if (para.onFail) para.onFail(`网络错误：${err.message}`)
+    } else {
+      try {
+        const response = JSON.parse(res.result as string) as GetNicknameResponse
+        hilog.info(DOMAIN, 'netService', `用户昵称：${response.nickname}`)
+        if (para.onSuccess) para.onSuccess(response.nickname)
+      } catch (e) {
+        if (para.onFail) para.onFail(e)
+      }
     }
   })
 }

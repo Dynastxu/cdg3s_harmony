@@ -1,5 +1,5 @@
 import { login } from '../network/login'
-import { isBlank } from '../utils/base'
+import { isBlank } from '../utils/function'
 import { showToast } from '../utils/ui'
 
 @Component
@@ -7,6 +7,7 @@ struct LoginPage {
   @State agreement: boolean = false
   @State username: string = ''
   @State psw: string = ''
+  @State isLogging: boolean = false
 
   @Consume navPathStack: NavPathStack
 
@@ -56,25 +57,28 @@ struct LoginPage {
               .fontSize(14)
           }
           Blank().height(50)
-          Button('登录')
+          Button(this.isLogging ? '登录中' : '登录')
             .height(50)
             .width('100%')
             .backgroundColor($r('app.color.theme'))
             .fontWeight(FontWeight.Medium)
             .onClick(() => {
+              this.isLogging = true
               login({
                 username: this.username,
                 password: this.psw,
                 onSuccess: (msg: string) => {
                   showToast(msg, this.getUIContext())
+                  this.isLogging = false
                   this.navPathStack.pop()
                 },
                 onFail: (msg: string) => {
                   showToast(msg, this.getUIContext())
+                  this.isLogging = false
                 }
               })
             })
-            .enabled(this.agreement && !isBlank(this.username) && !isBlank(this.psw))
+            .enabled(this.agreement && !isBlank(this.username) && !isBlank(this.psw) && !this.isLogging)
           Blank().height(20)
           Button('注册')
             .height(50)

@@ -33,6 +33,10 @@ export default class EntryAbility extends UIAbility {
       try {
         let windowClass = windowStage.getMainWindowSync();
 
+        PersistentStorage.persistProp('login_token', '')
+        PersistentStorage.persistProp('username', '')
+        PersistentStorage.persistProp('nickname', '')
+
         // 注册事件监听，用于接收页面传来的状态栏颜色需求
         emitter.on('changeStatusBar', (data: emitter.EventData) => {
           if (windowClass && data?.data && typeof data.data === 'object') {
