@@ -1,3 +1,4 @@
+// 暂时仅用于假数据
 export interface GoodsInfo {
   id: number
   uid?: string
@@ -10,14 +11,14 @@ export interface GoodsInfo {
 }
 
 export interface Classification {
-  id: number,
+  id: number
   name: string
 }
 
 export interface GoodsTag {
-  id: number,
-  name: string,
-  color: string | null,
+  id: number
+  name: string
+  color: string | null
   description: string | null
 }
 
@@ -27,13 +28,13 @@ export interface GoodsImage {
 }
 
 export interface Goods {
-  id: number,
-  name: string,
-  price: number,
-  category: string | null,
-  discountedPrice: number | null,
-  isStartingPrice: boolean,
-  goodsTag: GoodsTag[],
-  images: GoodsImage[],
+  id: number
+  name: string
+  price: number
+  category: string | null
+  discountedPrice: number | null
+  isStartingPrice: boolean
+  goodsTag: GoodsTag[]
+  images: GoodsImage[]
   mainImage: GoodsImage | null
 }

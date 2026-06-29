@@ -21,6 +21,7 @@ export struct ClassificationContent {
   @State private rootDataSource: ClassificationRootDataSource = new ClassificationRootDataSource()
   @State private dataSource: ClassificationDataSource = new ClassificationDataSource(-1)
   @State private goodsDataSourceMap: Map<number, ClassificationGoodsDataSource> = new Map()
+  @Consume navPathStack: NavPathStack
 
   @Builder
   buildClassification(index: number, name: string | Resource) {
@@ -153,6 +154,9 @@ export struct ClassificationContent {
     }
     .padding(5)
     .backgroundColor('#f8f8f8')
+    .onClick(() => {
+      this.navPathStack.pushPathByName('GoodsDetails', goods.id)
+    })
   }
 
   build() {
