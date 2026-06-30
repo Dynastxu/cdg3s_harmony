@@ -83,6 +83,7 @@ export struct ClassificationContent {
         .scrollBar(BarState.Off)
         .height(30)
 
+        // 分割线
         Column()
           .borderWidth(1)
           .borderColor('#ececec')
@@ -99,6 +100,7 @@ export struct ClassificationContent {
                 .alignSelf(ItemAlign.Start)
                 .width('100%')
                 .fontWeight(FontWeight.Bold)
+                .margin({top: index == 0 ? 10 : 20})
               Column() {
                 LazyForEach(
                   this.getGoodsDataSource(item.id),
@@ -112,12 +114,11 @@ export struct ClassificationContent {
             },
             (item: Classification) => item.id.toString()
           )
+          Blank().height(300)
         }
         .width('100%')
-        .layoutWeight(1)
       }
       .width('100%')
-      .height('100%')
     }
   }
 
@@ -212,6 +213,8 @@ export struct ClassificationContent {
         }
         .layoutWeight(2)
         .padding({left: 5, right: 5})
+        .height('100%')
+        .scrollBar(BarState.Off)
       }
       .layoutWeight(1)
     }
