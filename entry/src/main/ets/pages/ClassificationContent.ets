@@ -6,6 +6,7 @@ import {
   ClassificationGoodsDataSource
 } from "../data/ClassificationDataSource"
 import { Classification, Goods } from "../data/entity"
+import { minPrice } from "../utils/function"
 
 const DOMAIN = 0x0002
 
@@ -132,17 +133,20 @@ export struct ClassificationContent {
   @LocalBuilder
   buildGoodsItem(goods: Goods, buildType: GoodsItemBuildType = GoodsItemBuildType.List, onClick?: () => void) {
     Row() {
+      // 图片
       Image(`http://${HOST}${goods.mainImage?.imagePath}`)
         .width(80)
         .height(80)
         .objectFit(ImageFit.Cover)
         .borderRadius(8)
       Column() {
+        // 名称
         Text(goods.name)
+        // 价格
         Row() {
           Text('￥').fontSize(10)
-          Text(`${goods.price}`)
-          if (goods.isStartingPrice) {
+          Text(`${minPrice(goods.price, goods.discountedPrice, goods.startingPrice)}`)
+          if (goods.startingPrice) {
             Text('起').fontSize(10)
           }
           // TODO 商品标签

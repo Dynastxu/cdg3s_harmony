@@ -110,6 +110,7 @@ struct GoodDetailsPage {
     .width('100%')
     .background($r('app.color.background'))
     .padding(10)
+    .position({ bottom: 0 })
   }
 
   build() {
@@ -146,11 +147,7 @@ struct GoodDetailsPage {
         .padding({ top: $r('app.integer.safe_area_top') , left: 10, right: 10})
 
         // 底部栏
-        Column() {
-          Blank().layoutWeight(1)
-          this.buildBottomBar()
-        }
-        .width('100%')
+        this.buildBottomBar()
       }
     }
     .hideTitleBar(true)

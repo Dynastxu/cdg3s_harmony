@@ -33,7 +33,7 @@ export interface Goods {
   price: number
   category: string | null
   discountedPrice: number | null
-  isStartingPrice: boolean
+  startingPrice: number | null
   goodsTag: GoodsTag[]
   images: GoodsImage[]
   mainImage: GoodsImage | null
