@@ -1,4 +1,4 @@
-// 暂时仅用于假数据
+// GoodsInfo 暂时仅用于假数据
 export interface GoodsInfo {
   id: number
   uid?: string
@@ -30,11 +30,22 @@ export interface GoodsImage {
 export interface Goods {
   id: number
   name: string
-  price: number
+  price: number | null
   category: string | null
   discountedPrice: number | null
   startingPrice: number | null
   goodsTag: GoodsTag[]
   images: GoodsImage[]
   mainImage: GoodsImage | null
+  specifications: GoodsSpecification[] | null
+}
+
+export interface GoodsSpecification {
+  name: string
+  value: string
+}
+
+export interface GoodsSpecificationImage {
+  specifications: GoodsSpecification[]
+  image: GoodsImage
 }
