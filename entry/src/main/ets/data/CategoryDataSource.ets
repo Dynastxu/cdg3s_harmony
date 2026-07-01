@@ -1,17 +1,17 @@
 import { HOST } from "../config";
-import { Classification, Goods } from "./entity";
+import { Category, Goods } from "./entity";
 import { BaseDataSource } from "./BaseDataSource";
 import { hilog } from "@kit.PerformanceAnalysisKit";
 
 const DOMAIN = 0x0004
 
-export class ClassificationRootDataSource extends BaseDataSource<Classification> {
+export class CategoryRootDataSource extends BaseDataSource<Category> {
   constructor() {
     super(HOST + "/category/listRoots")
   }
 }
 
-export class ClassificationDataSource extends BaseDataSource<Classification> {
+export class CategoryDataSource extends BaseDataSource<Category> {
   constructor(id: number) {
     super(id < 0 ? null : `${HOST}/category/listChild?id=${id.toString()}`)
   }
@@ -21,7 +21,7 @@ export class ClassificationDataSource extends BaseDataSource<Classification> {
   }
 }
 
-export class ClassificationGoodsDataSource extends BaseDataSource<Goods> {
+export class CategoryGoodsDataSource extends BaseDataSource<Goods> {
   constructor(categoryId: number) {
     super(categoryId < 0 ? null : `${HOST}/goods/getCategoryGoods?categoryId=${categoryId}`, () => {
       hilog.debug(DOMAIN, 'netService', this.data[0]?.mainImage?.imagePath)

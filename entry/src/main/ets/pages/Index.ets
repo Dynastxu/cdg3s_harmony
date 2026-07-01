@@ -1,5 +1,5 @@
 import { setWindowSystemBarColor } from '../utils/ui';
-import { ClassificationContent } from './ClassificationContent';
+import { CategoryContent } from './CategoryContent';
 import { HomeContent } from './HomeContent';
 import { ProfileContent } from './ProfileContent';
 
@@ -37,7 +37,7 @@ struct Index {
         ))
 
         TabContent() {
-          ClassificationContent()
+          CategoryContent()
         }
         .tabBar(this.buildTabBar(
           $r("app.media.layout_list"),

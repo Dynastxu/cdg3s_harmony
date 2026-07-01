@@ -10,7 +10,7 @@ export interface GoodsInfo {
   desc: string | Resource
 }
 
-export interface Classification {
+export interface Category {
   id: number
   name: string
 }
