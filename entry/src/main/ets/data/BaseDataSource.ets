@@ -1,12 +1,12 @@
 import { http } from "@kit.NetworkKit"
 import { hilog } from "@kit.PerformanceAnalysisKit"
-
-const DOMAIN = 0x0003
+import { DOMAIN } from "../common/constants/LogConstants"
 
 export abstract class BaseDataSource<T> implements IDataSource {
   protected data: T[] = []
   protected listeners: DataChangeListener[] = []
   protected isLoadingData: boolean = false
+  protected abstract logTag: string
 
   constructor(url: string | null, onLoadOver?: () => void) {
     if (url != null) this.getDataFrom(url, onLoadOver)
@@ -43,7 +43,7 @@ export abstract class BaseDataSource<T> implements IDataSource {
   }
 
   protected getDataFrom(url: string, onReloadOver?: () => void) {
-    hilog.info(DOMAIN, "netService", `从 ${url} 获取数据`)
+    hilog.info(DOMAIN.DATASOURCE, this.logTag, `从 ${url} 获取数据`)
 
     const httpRequest: http.HttpRequest = http.createHttp()
 
@@ -51,9 +51,9 @@ export abstract class BaseDataSource<T> implements IDataSource {
     httpRequest.request(url, (err: BusinessError, res: http.HttpResponse) => {
       if (err == null) {
         this.data = JSON.parse(res.result as string) as T[]
-        hilog.info(DOMAIN, "netService", `获取数据成功 (${this.data.length})\n${res.result as string}`)
+        hilog.info(DOMAIN.DATASOURCE, this.logTag, `获取数据成功 (${this.data.length})\n${res.result as string}`)
       } else {
-        hilog.error(DOMAIN, "netService", `获取数据失败：${err.message}`)
+        hilog.error(DOMAIN.DATASOURCE, this.logTag, `获取数据失败：${err.message}`)
       }
       httpRequest.destroy()
       this.notifyDataRefresh()

@@ -1,0 +1,6 @@
+export enum DOMAIN {
+  PAGE = 0x0100,
+  UTILS = 0x0200,
+  NETWORK = 0x0300,
+  DATASOURCE = 0x0400
+}

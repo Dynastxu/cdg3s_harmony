@@ -2,16 +2,19 @@ import { HOST } from "../config";
 import { Category, Goods } from "./entity";
 import { BaseDataSource } from "./BaseDataSource";
 import { hilog } from "@kit.PerformanceAnalysisKit";
-
-const DOMAIN = 0x0004
+import { DOMAIN } from "../common/constants/LogConstants";
 
 export class CategoryRootDataSource extends BaseDataSource<Category> {
+  protected logTag: string = 'CategoryRootDataSource'
+
   constructor() {
     super(HOST + "/category/listRoots")
   }
 }
 
 export class CategoryDataSource extends BaseDataSource<Category> {
+  protected logTag: string = 'CategoryDataSource'
+
   constructor(id: number) {
     super(id < 0 ? null : `${HOST}/category/listChild?id=${id.toString()}`)
   }
@@ -22,9 +25,11 @@ export class CategoryDataSource extends BaseDataSource<Category> {
 }
 
 export class CategoryGoodsDataSource extends BaseDataSource<Goods> {
+  protected logTag: string = 'CategoryGoodsDataSource'
+
   constructor(categoryId: number) {
     super(categoryId < 0 ? null : `${HOST}/goods/getCategoryGoods?categoryId=${categoryId}`, () => {
-      hilog.debug(DOMAIN, 'netService', this.data[0]?.mainImage?.imagePath)
+      hilog.debug(DOMAIN.DATASOURCE, this.logTag, this.data[0]?.mainImage?.imagePath)
     })
   }
 

@@ -2,8 +2,7 @@ import { LengthUnit } from "@kit.ArkUI"
 import { GoodsInfo } from "../data/entity"
 import hilog from "@ohos.hilog"
 import { FeaturedRecommendDataSource } from "../data/FeaturedRecommendDataSource"
-
-const DOMAIN = 0x0001
+import { DOMAIN } from "../common/constants/LogConstants"
 
 @Component
 export struct HomeMainPageContent {
@@ -644,7 +643,7 @@ export struct HomeMainPageContent {
       .scrollBar(BarState.Off)
       .onReachEnd(() => {
         this.FeaturedRecommendDataSource.loadMore()
-        hilog.info(DOMAIN, "load", "loading content")
+        hilog.info(DOMAIN.PAGE, "HomeMainPageContent", "loading content")
       })
 
       // 固定搜索栏

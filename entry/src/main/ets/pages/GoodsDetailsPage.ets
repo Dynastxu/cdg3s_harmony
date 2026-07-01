@@ -1,6 +1,6 @@
 import { HOST } from "../config"
 import { Goods, GoodsImage } from "../data/entity"
-import { getDataFrom } from "../utils/network"
+import { getDataFrom } from "../network/utils"
 
 @Component
 struct GoodDetailsPage {

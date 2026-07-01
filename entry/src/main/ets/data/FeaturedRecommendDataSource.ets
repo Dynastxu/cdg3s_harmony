@@ -2,6 +2,7 @@ import { BaseDataSource } from './BaseDataSource';
 import { GoodsInfo } from './entity';
 
 export class FeaturedRecommendDataSource extends BaseDataSource<GoodsInfo> {
+  protected logTag: string = 'FeaturedRecommendDataSource'
   private dataSpanShot: GoodsInfo[]
   private uidCounter: number = 0  // 唯一 id 计数器
 

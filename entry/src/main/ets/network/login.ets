@@ -3,8 +3,7 @@ import { http } from "@kit.NetworkKit"
 import { GetNicknameResponse, LoginRequest, LoginResponse } from "./dto"
 import { SOFPara} from "../utils/interface"
 import { hilog } from "@kit.PerformanceAnalysisKit"
-
-const DOMAIN = 0x0007
+import { DOMAIN } from "../common/constants/LogConstants"
 
 export interface LoginPara extends SOFPara {
   username: string
@@ -49,7 +48,7 @@ export function login(para: LoginPara) {
               AppStorage.set('nickname', nickname)
             },
             onFail: (msg: string) => {
-              hilog.error(DOMAIN, 'netService', `获取昵称失败：${msg}`)
+              hilog.error(DOMAIN.NETWORK, 'Login', `获取昵称失败：${msg}`)
             }
           })
           if (para.onSuccess) {
@@ -85,7 +84,7 @@ export function getNickname(para: GetNicknamePara) {
     } else {
       try {
         const response = JSON.parse(res.result as string) as GetNicknameResponse
-        hilog.info(DOMAIN, 'netService', `用户昵称：${response.nickname}`)
+        hilog.info(DOMAIN.NETWORK, 'Login', `用户昵称：${response.nickname}`)
         if (para.onSuccess) para.onSuccess(response.nickname)
       } catch (e) {
         if (para.onFail) para.onFail(e)

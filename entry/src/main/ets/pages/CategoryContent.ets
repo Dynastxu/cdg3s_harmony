@@ -1,10 +1,9 @@
 import hilog from '@ohos.hilog'
+import { DOMAIN } from '../common/constants/LogConstants'
 import { HOST } from '../config'
 import { CategoryDataSource, CategoryGoodsDataSource, CategoryRootDataSource } from '../data/CategoryDataSource'
 import { Category, Goods } from '../data/entity'
 import { minPrice } from '../utils/function'
-
-const DOMAIN = 0x0002
 
 enum GoodsItemBuildType {
   List,
@@ -46,7 +45,7 @@ export struct CategoryContent {
       if (index >= 0) {
         const selectionId = this.rootDataSource.getData(index).id
         this.dataSource.reloadWithId(selectionId)
-        hilog.info(DOMAIN, 'select', `selection id: ${selectionId}`)
+        hilog.info(DOMAIN.PAGE, 'CategoryContent', `selection id: ${selectionId}`)
       }
     })
     .height(50)

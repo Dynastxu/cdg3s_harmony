@@ -2,8 +2,6 @@ import { isBlank } from "../utils/function"
 import { register } from "../network/register"
 import { showToast } from "../utils/ui"
 
-const DOMAIN = 0x0006
-
 @Component
 struct RegisterPage {
   @State agreement: boolean = false
