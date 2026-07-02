@@ -7,6 +7,10 @@ export struct ProfileContent {
   @StorageProp('username') username?: string = AppStorage.get('username')
   @StorageProp('login_token') token?: string = AppStorage.get('login_token')
 
+  private onSettingBtnClick() {
+    this.navPathStack.pushPathByName('Settings', null)
+  }
+
   build() {
     Scroll() {
       Column() {
@@ -18,8 +22,20 @@ export struct ProfileContent {
             .layoutWeight(1)
             .height('100%')
             .onClick(() => {
-              this.navPathStack.pushPathByName('Login', null)
+              if (this.token == '') {
+                this.navPathStack.pushPathByName('Login', null)
+              }
             })
+          Row() {
+            Image($r('app.media.settings'))
+              .height(20)
+              .width(20)
+              .margin(5)
+              .onClick(() => {
+                this.onSettingBtnClick()
+              })
+          }
+          .position({ top: 0, right: 0})
         }
         .height(50)
       }

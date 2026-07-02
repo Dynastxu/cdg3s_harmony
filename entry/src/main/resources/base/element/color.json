@@ -17,6 +17,10 @@
       "value": "#ffffff"
     },
     {
+      "name": "background_dim",
+      "value": "#f5f5f5"
+    },
+    {
       "name": "font",
       "value": "#000000"
     },
