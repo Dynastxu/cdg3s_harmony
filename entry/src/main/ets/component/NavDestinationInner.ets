@@ -107,7 +107,6 @@ struct NavDestinationInnerPreview {
     Column() {
       Text('顶部栏')
     }
-    .height('100%')
     .width('100%')
     .backgroundColor($r('app.color.theme'))
   }
@@ -126,7 +125,8 @@ struct NavDestinationInnerPreview {
       innerContent: this.innerContent,
       topBar: this.topContent,
       bottomBar: this.bottomContent,
-      showMaskLayer: this.showMaskLayer
+      showMaskLayer: this.showMaskLayer,
+      enableTopBarSafeArea: false
     })
   }
 }
