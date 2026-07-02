@@ -6,8 +6,10 @@ export struct NavDestinationInner {
   @BuilderParam bottomBar: () => void = this.slot
   @BuilderParam innerContent: () => void = this.slot
   @BuilderParam maskLayer: () => void = this.defaultMaskLayer
-  @State topBarHeight: Length = $r('app.integer.safe_area_top')
-  @State enableTopSafeArea: boolean = true
+  @State topSafeArea: Length = $r('app.integer.safe_area_top')
+  @Prop enableInnerContentTopSafeArea: boolean = true
+  @Prop enableTopBarSafeArea: boolean = true
+  @State private topBarHeight: Length = 0
   @Prop showMaskLayer: boolean = false
   onReady: Callback<NavDestinationContext> = () => {
   }
@@ -46,21 +48,31 @@ export struct NavDestinationInner {
   build() {
     NavDestination() {
       Stack() {
+        // 主内容
         Column() {
-          if (this.enableTopSafeArea) {
+          if (this.enableInnerContentTopSafeArea) {
             Blank().height(this.topBarHeight)
           }
           this.innerContent()
         }
         .width('100%')
 
+        // 顶部栏
         Column() {
+          if (this.enableTopBarSafeArea) {
+            Blank().height(this.topSafeArea)
+          }
           this.topBar()
         }
         .position({ top: 0 })
-        .height(this.topBarHeight)
         .width('100%')
+        .onSizeChange((_ov, nv) => {
+          if (nv.height) {
+            this.topBarHeight = nv.height
+          }
+        })
 
+        // 底部栏
         Column() {
           this.bottomBar()
         }

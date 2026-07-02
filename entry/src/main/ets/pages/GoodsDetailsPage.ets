@@ -279,6 +279,7 @@ struct GoodDetailsPage {
       Blank().layoutWeight(1)
     }
     .width('100%')
+    .padding({ left: 10, right: 10})
   }
 
   @Builder
@@ -323,6 +324,7 @@ struct GoodDetailsPage {
       innerContent: () => { this.mainContent() },
       maskLayer: () => { this.maskLayer() },
       showMaskLayer: this.showAddToCartPanel,
+      enableInnerContentTopSafeArea: false,
       onReady: (context: NavDestinationContext) => {
         const goodsId = context.pathInfo.param as number
         // 获取商品数据
