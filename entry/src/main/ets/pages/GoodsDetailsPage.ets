@@ -4,6 +4,7 @@ import { getDataFrom } from '../network/utils'
 import { hilog } from '@kit.PerformanceAnalysisKit'
 import { DOMAIN } from '../common/constants/LogConstants'
 import { LengthUnit } from '@kit.ArkUI'
+import { NavDestinationInner } from '../component/NavDestinationInner'
 
 @Component
 struct GoodDetailsPage {
@@ -90,7 +91,7 @@ struct GoodDetailsPage {
   }
 
   @Builder
-  buildBottomBar() {
+  bottomBar() {
     Row({space: 10}) {
       this.imageButton(
         $r('app.media.message_circle_question_mark'),
@@ -122,7 +123,6 @@ struct GoodDetailsPage {
     .width('100%')
     .background($r('app.color.background'))
     .padding(10)
-    .position({ bottom: 0 })
   }
 
   @Builder
@@ -166,7 +166,8 @@ struct GoodDetailsPage {
 
               // 名称及选中的规格
               Row() {
-                Text(this.goods.name + ' ' + this.getSelectedSpecsText())                  .fontSize(12)
+                Text(this.goods.name + ' ' + this.getSelectedSpecsText())
+                  .fontSize(12)
                   .textOverflow({ overflow: TextOverflow.None })
               }
               .width('100%')
@@ -241,123 +242,129 @@ struct GoodDetailsPage {
 
   private getSelectedSpecsText(): string {
     if (this.selectedSpecifications.length === 0) return ''
-    return this.selectedSpecifications.map(s => `${s.name}: ${s.value}`).join(', ')
+    return this.selectedSpecifications.map(s => `${s.value}`).join(' ')
+  }
+
+  @Builder
+  mainContent() {
+    // 主内容
+    Scroll() {
+      Column() {
+        this.buildImages()
+        Column() {
+          this.buildBaseInfo()
+        }
+        .padding(10)
+
+        Blank().layoutWeight(1)
+      }
+    }
+    .backgroundColor('#f5f5f5')
+    .height('100%')
+    .width('100%')
+  }
+
+  @Builder
+  topBar() {
+    // 顶部栏
+    Row() {
+      // 返回按钮
+      Image($r('app.media.chevron_left'))
+        .backgroundColor('#44000000')
+        .height(30)
+        .borderRadius(10)
+        .onClick(() => {
+          this.navPathStack.pop()
+        })
+      Blank().layoutWeight(1)
+    }
+    .width('100%')
+  }
+
+  @Builder
+  maskLayer() {
+    // 半透明遮罩
+    Column()
+      .width('100%')
+      .height('100%')
+      .backgroundColor('#33000000')
+      .onClick(() => {
+        this.getUIContext().animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
+          this.showAddToCartPanel = false
+        })
+      })
+      .transition(TransitionEffect.OPACITY.animation({ duration: 300 }))
+
+    // 规格选择底部面板
+    Column() {
+      // 规格内容
+      this.buildAddToShoppingCartContent()
+    }
+    .width('100%')
+    .backgroundColor($r('app.color.background'))
+    .borderRadius({ topLeft: 10, topRight: 10 })
+    .padding({
+      left: 20,
+      right: 20,
+      top: 20,
+      bottom: 30
+    })
+    .position({ bottom: 0 })
+    .transition(
+      TransitionEffect.translate({ y: 600 })
+        .animation({ duration: 300, curve: Curve.EaseOut })
+    )
   }
 
   build() {
-    NavDestination() {
-      Stack({ alignContent: Alignment.Top }) {
-        // 内容
-        Scroll() {
-          Column() {
-            this.buildImages()
-            Column() {
-              this.buildBaseInfo()
-            }
-            .padding(10)
-
-            Blank().layoutWeight(1)
-          }
-        }
-        .backgroundColor('#f5f5f5')
-        .height('100%')
-        .width('100%')
-
-        // 顶部栏
-        Row() {
-          // 返回按钮
-          Image($r('app.media.chevron_left'))
-            .backgroundColor('#44000000')
-            .height(30)
-            .borderRadius(10)
-            .onClick(() => {
-              this.navPathStack.pop()
-            })
-          Blank().layoutWeight(1)
-        }
-        .padding({ top: $r('app.integer.safe_area_top') , left: 10, right: 10})
-
-        // 底部栏
-        this.buildBottomBar()
-
-        // 加入购物车规格选择面板
-        if (this.showAddToCartPanel) {
-          // 半透明遮罩
-          Column()
-            .width('100%')
-            .height('100%')
-            .backgroundColor('#33000000')
-            .onClick(() => {
-              this.getUIContext().animateTo({ duration: 300, curve: Curve.EaseOut }, () => {
-                this.showAddToCartPanel = false
+    NavDestinationInner({
+      topBar: () => { this.topBar() },
+      bottomBar: () => { this.bottomBar() },
+      innerContent: () => { this.mainContent() },
+      maskLayer: () => { this.maskLayer() },
+      showMaskLayer: this.showAddToCartPanel,
+      onReady: (context: NavDestinationContext) => {
+        const goodsId = context.pathInfo.param as number
+        // 获取商品数据
+        getDataFrom<Goods>({
+          url: `${HOST}/goods?id=${goodsId}`,
+          onSuccess: (g: Goods) => {
+            if (g == null) return
+            this.goods = g
+            if (g.specifications && g.specifications.length > 0) {
+              // 为每个规格种类选择第一个值作为默认选中
+              const specNames = this.getGoodsSpecificationsNames(g.specifications)
+              this.selectedSpecifications = []
+              specNames.forEach(name => {
+                const values = this.getGoodsSpecificationsValues(g.specifications!, name)
+                if (values.length > 0) {
+                  // 找到该规格种类的第一个规格项
+                  const firstSpec = g.specifications!.find(s => s.name === name && s.value === values[0])
+                  if (firstSpec) {
+                    this.selectedSpecifications.push(firstSpec)
+                  }
+                }
               })
-            })
-            .transition(TransitionEffect.OPACITY.animation({ duration: 300 }))
-
-          // 规格选择底部面板
-          Column() {
-            // 规格内容
-            this.buildAddToShoppingCartContent()
+              hilog.info(DOMAIN.PAGE, 'GoodsDetails', `初始化选中规格: ${JSON.stringify(this.selectedSpecifications)}`)
+              // 获取商品规格图片数据
+              getDataFrom<GoodsSpecificationImage[]>({
+                url: `${HOST}/goods/image/specification?goodsId=${g.id}`,
+                onSuccess: (v) => {
+                  hilog.info(DOMAIN.PAGE, 'GoodsDetails', `获取规格图片成功，数量: ${v?.length || 0}`)
+                  if (v && v.length > 0) {
+                    v.forEach((specImg, index) => {
+                      hilog.info(DOMAIN.PAGE, 'GoodsDetails', `规格图片[${index}]: 图片路径=${specImg.image?.imagePath}, 规格组合=${JSON.stringify(specImg.specifications)}`)
+                    })
+                  }
+                  this.specificationImages = v
+                  // 初始化时匹配第一张规格图片
+                  this.updateSpecificationImageBySelection()
+                }
+              })
+            }
           }
-          .width('100%')
-          .backgroundColor($r('app.color.background'))
-          .borderRadius({ topLeft: 10, topRight: 10 })
-          .padding({
-            left: 20,
-            right: 20,
-            top: 20,
-            bottom: 30
-          })
-          .position({ bottom: 0 })
-          .transition(
-            TransitionEffect.translate({ y: 600 })
-              .animation({ duration: 300, curve: Curve.EaseOut })
-          )
-        }
+        })
       }
-    }
-    .hideTitleBar(true)
-    .onReady((context: NavDestinationContext) => {
-      const goodsId = context.pathInfo.param as number
-      // 获取商品数据
-      getDataFrom<Goods>({
-        url: `${HOST}/goods?id=${goodsId}`,
-        onSuccess: (g: Goods) => {
-          if (g == null) return
-          this.goods = g
-          if (g.specifications && g.specifications.length > 0) {
-            // 为每个规格种类选择第一个值作为默认选中
-            const specNames = this.getGoodsSpecificationsNames(g.specifications)
-            this.selectedSpecifications = []
-            specNames.forEach(name => {
-              const values = this.getGoodsSpecificationsValues(g.specifications!, name)
-              if (values.length > 0) {
-                // 找到该规格种类的第一个规格项
-                const firstSpec = g.specifications!.find(s => s.name === name && s.value === values[0])
-                if (firstSpec) {
-                  this.selectedSpecifications.push(firstSpec)
-                }
-              }
-            })
-            hilog.info(DOMAIN.PAGE, 'GoodsDetails', `初始化选中规格: ${JSON.stringify(this.selectedSpecifications)}`)
-            // 获取商品规格图片数据
-            getDataFrom<GoodsSpecificationImage[]>({
-              url: `${HOST}/goods/image/specification?goodsId=${g.id}`,
-              onSuccess: (v) => {
-                hilog.info(DOMAIN.PAGE, 'GoodsDetails', `获取规格图片成功，数量: ${v?.length || 0}`)
-                if (v && v.length > 0) {
-                  v.forEach((specImg, index) => {
-                    hilog.info(DOMAIN.PAGE, 'GoodsDetails', `规格图片[${index}]: 图片路径=${specImg.image?.imagePath}, 规格组合=${JSON.stringify(specImg.specifications)}`)
-                  })
-                }
-                this.specificationImages = v
-                // 初始化时匹配第一张规格图片
-                this.updateSpecificationImageBySelection()
-              }
-            })
-          }
-        }
-      })
     })
   }
 
